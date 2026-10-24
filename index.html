@@ -34,11 +34,13 @@ nav{position:sticky;top:0;z-index:50;width:100%;background:rgba(15,27,61,.97);ba
 nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:68px}
 .logo{background:#fff;border-radius:12px;padding:3px 10px;display:block}
 .logo img{height:38px;width:auto}
-.links{display:flex;gap:clamp(12px,1.5vw,26px);align-items:center}
+.links{display:flex;gap:clamp(2px,.5vw,8px);align-items:center}
 .links a{color:#dfe6ff;font-weight:600;font-size:.95rem}
+.links a:not(.btn){padding:8px 14px;border-radius:999px;transition:background .2s,color .2s}
 .links a:hover{color:var(--sun)}
-.links a.active:not(.btn){color:var(--navy);background:var(--sun);border-radius:999px;padding:8px 14px;box-shadow:0 3px 12px rgba(255,201,60,.28)}
-.links .btn{padding:9px 20px;color:#fff}
+.links a.active:not(.btn){color:var(--navy);background:var(--sun);box-shadow:0 3px 12px rgba(255,201,60,.28)}
+.links .btn{padding:9px 20px;color:#fff;margin-left:10px}
+.links .btn:hover{color:#fff}
 .burger{display:none;background:none;border:2px solid #fff;border-radius:10px;width:44px;height:40px;cursor:pointer;color:#fff;font-size:1.3rem}
 /* hero */
 .hero{min-height:0;display:flex;align-items:center;padding:42px 0 54px;background:radial-gradient(900px 500px at 85% 20%,#26408f 0,transparent 60%),radial-gradient(600px 400px at 0 100%,#0c6b73 0,transparent 60%),var(--navy);color:#fff;position:relative;overflow:hidden}
@@ -165,16 +167,17 @@ footer .logo{display:inline-block;margin-bottom:10px}
 @media(max-width:900px){
 html{scroll-padding-top:68px}
 nav .wrap{height:68px}
-.links a.active:not(.btn){padding:8px 14px}
+.links a:not(.btn){padding:13px 14px;border-radius:0}
+.links a.active:not(.btn){border-radius:12px;border-bottom-color:transparent}
 .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
 .t{min-height:220px}
 section{padding:62px 0}
 .hero .wrap,.two,.r2{grid-template-columns:minmax(0,1fr)}
 .burger{display:block}
-.links{position:absolute;top:68px;left:0;right:0;background:var(--navy);flex-direction:column;align-items:stretch;gap:0;padding:8px 20px 20px;display:none;text-align:center}
+.links{position:absolute;top:68px;left:0;right:0;background:var(--navy);flex-direction:column;align-items:stretch;gap:0;padding:8px 20px 20px;display:none;text-align:center;max-height:calc(100vh - 68px);max-height:calc(100dvh - 68px);overflow-y:auto}
 .links.open{display:flex}
 .links a{padding:12px;border-bottom:1px solid rgba(255,255,255,.1)}
-.links .btn{margin-top:12px;border:0}
+.links .btn{margin:12px 0 0;border:0}
 .hero{min-height:0;padding:38px 0 48px}
 .aba{max-width:460px;width:100%;margin:12px auto 8px}
 .collage{height:430px;max-width:520px;margin:0 auto;width:100%}
@@ -203,12 +206,19 @@ form{padding:0 18px 22px}form h3{margin:0 -18px 6px;padding:18px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
 /* Final spacing polish: bring each section heading into view without a large blank lead-in. */
-html{scroll-padding-top:78px}
-section[id]{scroll-margin-top:78px;padding-top:44px;padding-bottom:68px}
+html{scroll-padding-top:68px}
+section[id]{scroll-margin-top:0;padding-top:44px;padding-bottom:68px}
 #about{padding-top:42px}
-#benefits,#branches,#gallery,#contact,#global{padding-top:44px}
-@media(max-width:900px){section[id]{scroll-margin-top:70px;padding-top:36px;padding-bottom:54px}#about{padding-top:34px}}
-@media(max-width:560px){section[id]{scroll-margin-top:68px;padding-top:28px;padding-bottom:44px}#about{padding-top:26px}}
+@media(max-width:900px){section[id]{padding-top:36px;padding-bottom:54px}#about{padding-top:34px}}
+@media(max-width:560px){section[id]{padding-top:28px;padding-bottom:44px}#about{padding-top:26px}}
+/* final QA: alignment, tablet and mobile */
+.wrap p:not(.sub):not(.lead){hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.wrap p.map-caption:not(.sub):not(.lead){text-align:center}
+.world-map .map-caption{position:absolute;left:0;right:0;bottom:0;z-index:5;margin:0;padding:8px 12px;background:rgba(255,255,255,.94)}
+section.founder{padding-top:60px;padding-bottom:68px}
+.lpm{flex-wrap:wrap}
+@media(max-width:900px){section.founder{padding-top:50px;padding-bottom:54px}}
+@media(max-width:560px){section.founder{padding-top:40px;padding-bottom:44px}.ring{inset:-10px}.tag{border-radius:18px;line-height:1.4}.lpm{gap:10px}.lpm span{padding-right:10px}}
 </style>
 </head>
 <body>
@@ -349,23 +359,35 @@ bg.onclick=function(){var o=lk.classList.toggle("open");bg.setAttribute("aria-ex
 lk.onclick=function(e){if(e.target.closest("a")){lk.classList.remove("open");bg.setAttribute("aria-expanded","false")}};
 /* Keep the selected navigation item synced with the visible page section. */
 (function(){
- var navLinks=Array.prototype.slice.call(lk.querySelectorAll('a[href^="#"]')).filter(function(a){
-   return ["#about","#benefits","#branches","#gallery","#contact"].indexOf(a.getAttribute("href"))!==-1;
- });
+ var nav=document.querySelector("nav");
+ var navLinks=Array.prototype.slice.call(lk.querySelectorAll('a[href^="#"]:not(.btn)'));
  var sections=navLinks.map(function(a){return {link:a,section:document.querySelector(a.getAttribute("href"))}}).filter(function(x){return x.section});
- function updateActive(){
-   var line=(document.querySelector("nav")?.getBoundingClientRect().height||68)+45,active=null;
-   sections.forEach(function(x){var r=x.section.getBoundingClientRect();if(r.top<=line&&r.bottom>line)active=x;});
-   if(!active&&window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-4){active=sections[sections.length-1]||null;}
-   navLinks.forEach(function(a){var selected=!!active&&a===active.link;a.classList.toggle("active",selected);if(selected)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current");});
+ var ticking=false,locked=false,settle=null,hardStop=null;
+ function setActive(active){
+   navLinks.forEach(function(a){var on=!!active&&a===active.link;a.classList.toggle("active",on);if(on)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current");});
  }
- window.addEventListener("scroll",updateActive,{passive:true});window.addEventListener("resize",updateActive);window.addEventListener("load",updateActive);updateActive();
+ function updateActive(){
+   ticking=false;
+   if(locked)return;
+   var line=(nav?nav.getBoundingClientRect().height:68)+24,active=null;
+   sections.forEach(function(x){if(x.section.getBoundingClientRect().top<=line)active=x;});
+   if(sections.length&&window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-4)active=sections[sections.length-1];
+   setActive(active);
+ }
+ function unlock(){locked=false;clearTimeout(settle);clearTimeout(hardStop);updateActive();}
+ function onScroll(){if(locked){clearTimeout(settle);settle=setTimeout(unlock,150);return;}if(!ticking){ticking=true;window.requestAnimationFrame(updateActive);}}
+ lk.addEventListener("click",function(e){
+   var a=e.target.closest("a");if(!a)return;
+   var hit=sections.filter(function(x){return x.link===a})[0];
+   if(hit){setActive(hit);locked=true;clearTimeout(settle);clearTimeout(hardStop);settle=setTimeout(unlock,400);hardStop=setTimeout(unlock,3000);}
+ });
+ window.addEventListener("scroll",onScroll,{passive:true});window.addEventListener("resize",onScroll);window.addEventListener("load",updateActive);updateActive();
 })();
 
 /* realistic, colorful interactive world map */
 (function(){
  var el=document.getElementById("learningMap");if(!el||!window.L)return;
- var map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true}).setView([22,18],2);
+ var map=L.map(el,{scrollWheelZoom:false,worldCopyJump:true,dragging:!L.Browser.mobile,tap:false}).setView([22,18],2);
  var mapTiles=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{attribution:'Tiles &copy; <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> &mdash; Sources: Esri, HERE, Garmin, FAO, NOAA, USGS, EPA, NPS',maxZoom:19}).addTo(map);
  mapTiles.on("tileerror",function(){var note=document.getElementById("mapTileNotice");if(note)note.hidden=false;});
  var places=[
@@ -390,7 +412,7 @@ figs.forEach(function(f){f.classList.toggle("hide",b.dataset.f!=="all"&&f.datase
 var lb=document.getElementById("lb");
 figs.forEach(function(f){f.onclick=function(){lb.querySelector("img").src=f.querySelector("img").src;lb.classList.add("open")}});
 lb.onclick=function(){lb.classList.remove("open")};
-document.onkeydown=function(e){if(e.key==="Escape")lb.classList.remove("open")};
+document.onkeydown=function(e){if(e.key==="Escape"){lb.classList.remove("open");lk.classList.remove("open");bg.setAttribute("aria-expanded","false")}};
 
 /* count-up + reveal */
 function cnt(e){var t=+e.dataset.count,n=0,s=setInterval(function(){n++;e.textContent=n;if(n>=t)clearInterval(s)},140)}
